@@ -16,7 +16,6 @@ data = pl.Path(__file__).parent.absolute() / 'data'
 associations_df = pd.read_csv(data / 'associations_etudiantes.csv')
 evenements_df = pd.read_csv(data / 'evenements_associations.csv')
 
-
 ## Vous devez ajouter les routes ici :
 @app.route("/api/alive", methods=['GET'])
 def alive_function():
@@ -25,7 +24,15 @@ def alive_function():
 
 @app.route("/api/associations", methods=['GET'])
 def assos_function():
-    response = make_response(jsonify(associations_df["nom"].to_dict()), 200)
+    response = make_response(jsonify(associations_df[["id", "nom"]].values.tolist()), 200)
+    return response
+
+@app.route("/api/associations/<int:id>", methods=['GET'])
+def assos_details(id):
+    if id >= 1 and id <=4 :
+        response = make_response(jsonify(associations_df.loc[id-1, "description"]), 200)
+    else:
+        response = make_response(jsonify({"error": "Association not found"}), 404)
     return response
 
 if __name__ == '__main__':
